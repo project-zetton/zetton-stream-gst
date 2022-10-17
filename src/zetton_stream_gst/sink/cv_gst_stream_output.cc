@@ -9,7 +9,7 @@ namespace zetton {
 namespace stream {
 
 const char* CvGstStreamOutput::SupportedExtensions[] = {
-    "mkv", "mp4", "qt", "flv", "avi", "h264", "h265", NULL};
+    "mkv", "mp4", "qt", "flv", "avi", "h264", "h265", nullptr};
 
 bool CvGstStreamOutput::IsSupportedExtension(const char* ext) {
   return IsGstSupportedExtension(ext, SupportedExtensions);

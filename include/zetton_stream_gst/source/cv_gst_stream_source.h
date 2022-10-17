@@ -13,17 +13,16 @@ namespace stream {
 
 class CvGstStreamSource : public BaseStreamSource {
  public:
-  ~CvGstStreamSource() = default;
-
   static bool IsSupportedExtension(const char* ext);
 
-  bool Init(const StreamOptions& options);
+  bool Init(const StreamOptions& options) override;
   bool Init(const std::string& pipeline);
   bool Open() override;
   void Close() override;
-  bool Capture(cv::Mat& frame);
+  bool Capture(const CameraImagePtr& raw_image) override;
+  bool Capture(cv::Mat& cv_frame);
 
-  void RegisterCallback(std::function<void(const cv::Mat& frame)>);
+  void RegisterCallback(std::function<void(const cv::Mat& cv_frame)>);
 
   static const char* SupportedExtensions[];
 

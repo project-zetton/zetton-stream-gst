@@ -86,10 +86,25 @@ void CvGstStreamSource::Close() {
   thread_capturing_->join();
 }
 
-bool CvGstStreamSource ::Capture(cv::Mat& frame) {
+bool CvGstStreamSource ::Capture(const CameraImagePtr& raw_image) {
   if (!buffer_->empty()) {
-    frame = buffer_->get();
-    return !frame.empty();
+    raw_image->is_new = 0;
+    auto cv_frame = buffer_->get();
+    raw_image->width = cv_frame.cols;
+    raw_image->height = cv_frame.rows;
+    raw_image->image = (char*)cv_frame.data;
+    raw_image->image_size = cv_frame.total() * cv_frame.elemSize();
+    raw_image->is_new = 1;
+    return !cv_frame.empty();
+  } else {
+    return false;
+  }
+}
+
+bool CvGstStreamSource ::Capture(cv::Mat& cv_frame) {
+  if (!buffer_->empty()) {
+    cv_frame = buffer_->get();
+    return !cv_frame.empty();
   } else {
     return false;
   }
