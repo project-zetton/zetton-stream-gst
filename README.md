@@ -1,30 +1,78 @@
 # zetton-stream-gst
 
-GStreamer-based stream modules for external communication in Project Zetton.
+English | [中文](README_zh-CN.md)
 
-## Prerequisites
+## Table of Contents
 
-Recommended environment:
+- [zetton-stream-gst](#zetton-stream-gst)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [What's New](#whats-new)
+  - [Installation](#installation)
+  - [Getting Started](#getting-started)
+  - [Overview of Supported Sources and Sinks](#overview-of-supported-sources-and-sinks)
+  - [FAQ](#faq)
+  - [Contributing](#contributing)
+  - [Acknowledgement](#acknowledgement)
+  - [License](#license)
+  - [Related Projects](#related-projects)
 
-- Ubuntu 18.04
-- OpenCV 4.1.0+
-- GStreamer 1.14+ (with `libgstrtspserver-1.0-dev`)
+## Introduction
 
-## Usage
+zetton-stream-gst is an open source extension of [zetton-stream](https://github.com/project-zetton/zetton-stream) package that enables video processing and streaming using the GStreamer framework. It's a part of the [Project Zetton](https://github.com/project-zetton).
 
-### Stream
+## What's New
 
-- `CvGstStreamSource`: capturing stream with OpenCV and GStreamer. [[example code]](example/cv_gst_rtsp_stream.cc)
+Please refer to [changelog.md](docs/en/changelog.md) for details and release history.
 
-   | Platform   | Protocol | Codec | Result                              |
-   | ---------- | -------- | ----- | ----------------------------------- |
-   | PC w/ CPU  | RTSP     | H264  | Works                               |
-   | PC w/ GPU  | RTSP     | H264  | Works in GUI (not in headless mode) |
-   | Jetson TX2 | RTSP     | H264  | Works                               |
+For compatibility changes between different versions of zetton-stream-gst, please refer to [compatibility.md](docs/en/compatibility.md).
 
-- `GstRtspStreamOutput` (C++) and `GstRtspStreamer` (Python): streaming given frames via RTSP protocol.
+## Installation
+
+Please refer to [Installation](docs/en/get_started.md) for installation instructions.
+
+## Getting Started
+
+Please see [get_started.md](docs/en/get_started.md) for the basic usage of zetton-stream-gst.
+
+## Overview of Supported Sources and Sinks
+
+|  Task  | Protocol | Format | Encoding |  CPU  | Intel GPU | NVIDIA GPU | NVIDIA Jetson | Rockchip |
+| :----: | :------: | :----: | :------: | :---: | :-------: | :--------: | :-----------: | :------: |
+| Source |   V4L2   | MJPEG  |   JPEG   |       |           |            |               |          |
+| Source |   V4L2   |  Raw   |    /     |       |           |            |               |          |
+| Source |   RTSP   |   /    |  H.264   |       |           |            |               |          |
+| Source |   RTMP   |   /    |  H.264   |       |           |            |               |          |
+| Source |   RTP    |   /    |  H.264   |       |           |            |               |          |
+|  Sink  |   RTSP   |   /    |  H.264   |       |           |            |               |          |
+|  Sink  |   RTMP   |   /    |  H.264   |       |           |            |               |          |
+|  Sink  |   RTP    |   /    |  H.264   |       |           |            |               |          |
+|  Sink  |    /     |  MP4   |  H.264   |       |           |            |               |          |
+
+Latency and throughput of different sources and sinks are listed in [benchmark.md](docs/en/benchmark.md).
+
+## FAQ
+
+Please refer to [FAQ](docs/en/faq.md) for frequently asked questions.
+
+## Contributing
+
+We appreciate all contributions to improve zetton-stream-gst. Please refer to [CONTRIBUTING.md](.github/CONTRIBUTING.md) for the contributing guideline.
+
+## Acknowledgement
+
+We appreciate all the contributors who implement their methods or add new features, as well as users who give valuable feedbacks.
+We wish that the package and benchmark could serve the growing research and production community by providing a flexible toolkit to deploy models.
 
 ## License
 
-- For academic use, this project is licensed under the 2-clause BSD License - see the [LICENSE file](LICENSE) for details.
+- For academic use, this project is licensed under the 2-clause BSD License, please see the [LICENSE file](LICENSE) for details.
+
 - For commercial use, please contact [Yusu Pan](mailto:xxdsox@gmail.com).
+
+## Related Projects
+
+- [zetton-stream](https://github.com/project-zetton/zetton-inference): main package for video processing and streaming.
+
+- [zetton-ros-vendor](https://github.com/project-zetton/zetton-ros-vendor):
+ROS-related examples.
