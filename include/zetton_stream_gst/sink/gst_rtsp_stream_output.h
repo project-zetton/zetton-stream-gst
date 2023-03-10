@@ -24,7 +24,8 @@ class GstRtspStreamOutput : public BaseStreamSink {
   bool Init(const StreamOptions &options) override;
   bool Open() override;
   void Close() override;
-
+  bool Start();
+  void Stop();
   bool Render(const cv::Mat &frame);
   bool Render(void *image, uint32_t width, uint32_t height) override;
 
@@ -48,9 +49,6 @@ class GstRtspStreamOutput : public BaseStreamSink {
   std::string pipeline_string_;
 
  private:
-  /// \brief Initialize GStreamer and streaming thread
-  void start_video_mainloop();
-
   /// \brief Initialize of GStreamer RTSP server
   /// \return pointer to RTSP server instance
   GstRTSPServer *create_rtsp_server();

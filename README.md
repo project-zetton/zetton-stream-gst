@@ -37,17 +37,21 @@ Please see [get_started.md](docs/en/get_started.md) for the basic usage of zetto
 
 ## Overview of Supported Sources and Sinks
 
-|  Task  | Protocol | Format | Encoding |  CPU  | Intel GPU | NVIDIA GPU | NVIDIA Jetson | Rockchip |
-| :----: | :------: | :----: | :------: | :---: | :-------: | :--------: | :-----------: | :------: |
-| Source |   V4L2   | MJPEG  |   JPEG   |       |           |            |               |          |
-| Source |   V4L2   |  Raw   |    /     |       |           |            |               |          |
-| Source |   RTSP   |   /    |  H.264   |       |           |            |               |          |
-| Source |   RTMP   |   /    |  H.264   |       |           |            |               |          |
-| Source |   RTP    |   /    |  H.264   |       |           |            |               |          |
-|  Sink  |   RTSP   |   /    |  H.264   |       |           |            |               |          |
-|  Sink  |   RTMP   |   /    |  H.264   |       |           |            |               |          |
-|  Sink  |   RTP    |   /    |  H.264   |       |           |            |               |          |
-|  Sink  |    /     |  MP4   |  H.264   |       |           |            |               |          |
+|  Task  | Protocol | Format | Encoding | CPU  | Intel GPU | NVIDIA GPU | NVIDIA Jetson | Rockchip |
+| :----: | :------: | :----: | :------: | :--: | :-------: | :--------: | :-----------: | :------: |
+| Source |   V4L2   | MJPEG  |   JPEG   |  ✅   |     ❓     |     ❓      |       ❓       |    ❓     |
+| Source |   V4L2   |  Raw   |    /     |  ✅   |     /     |     /      |       /       |    /     |
+| Source |   RTSP   |   /    |  H.264   |  ✅   |     ❓     |     ❓      |       ❓       |    ❓     |
+| Source |   RTMP   |   /    |  H.264   |  ❌   |     ❌     |     ❌      |       ❌       |    ❌     |
+| Source |   RTP    |   /    |  H.264   |  ✅   |     ❓     |     ❓      |       ❓       |    ❓     |
+|  Sink  |   RTSP   |   /    |  H.264   |  ✅   |     ❓     |     ❓      |       ❓       |    ❓     |
+|  Sink  |   RTMP   |   /    |  H.264   |  ❌   |     ❌     |     ❌      |       ❌       |    ❌     |
+|  Sink  |   RTP    |   /    |  H.264   |  ✅   |     ❓     |     ❓      |       ❓       |    ❓     |
+|  Sink  |    /     |  MP4   |  H.264   |  ❌   |     ❌     |     ❌      |       ❌       |    ❌     |
+
+- ✅: Supported and tested
+- ❓: Supported but not tested
+- ❌: Not supported yet
 
 Latency and throughput of different sources and sinks are listed in [benchmark.md](docs/en/benchmark.md).
 

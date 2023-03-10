@@ -25,25 +25,34 @@ int main(int argc, char** argv) {
   output->Init(options);
 
   // start capturing
-  cv::Mat frame = cv::Mat::zeros(options.height, options.width, CV_8UC3);
-  std::cout << frame.empty() << std::endl;
-  while (true) {
-    cv::randu(frame, cv::Scalar(0, 0, 0), cv::Scalar(255, 255, 255));
-    // draw current time
-    auto t = std::time(nullptr);
-    auto tm = *std::localtime(&t);
-    std::ostringstream oss;
-    oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
-    auto time_str = oss.str();
-    // draw on frame
-    cv::putText(frame, time_str, cv::Point(50, 50), cv::FONT_HERSHEY_SIMPLEX, 1,
-                cv::Scalar(0, 0, 0), 5);
-    // push frame to stream
-    if (output->Render(frame)) {
-      AWARN_F("Send frame: {}x{}", frame.cols, frame.rows);
+  std::thread t([&]() {
+    cv::Mat frame = cv::Mat::zeros(options.height, options.width, CV_8UC3);
+    std::cout << frame.empty() << std::endl;
+    while (true) {
+      cv::randu(frame, cv::Scalar(0, 0, 0), cv::Scalar(255, 255, 255));
+      // draw current time
+      auto t = std::time(nullptr);
+      auto tm = *std::localtime(&t);
+      std::ostringstream oss;
+      oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
+      auto time_str = oss.str();
+      // draw on frame
+      cv::putText(frame, time_str, cv::Point(50, 50), cv::FONT_HERSHEY_SIMPLEX,
+                  1, cv::Scalar(0, 0, 0), 5);
+      // push frame to stream
+      if (output->Render(frame)) {
+        AWARN_F("Send frame: {}x{}", frame.cols, frame.rows);
+      }
+      usleep(100000);
     }
-    usleep(100000);
-  }
+  });
+  t.detach();
+
+  // start streamer
+  output->Start();
+
+  // stop streamer
+  output->Stop();
 
   return 0;
 }
