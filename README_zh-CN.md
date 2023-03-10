@@ -39,15 +39,19 @@ zetton-stream-gst 是 [zetton-stream](https://github.com/project-zetton/zetton-s
 
 |  Task  | Protocol | Format | Encoding |  CPU  | Intel GPU | NVIDIA GPU | NVIDIA Jetson | Rockchip |
 | :----: | :------: | :----: | :------: | :---: | :-------: | :--------: | :-----------: | :------: |
-| Source |   V4L2   | MJPEG  |   JPEG   |       |           |            |               |          |
-| Source |   V4L2   |  Raw   |    /     |       |           |            |               |          |
-| Source |   RTSP   |   /    |  H.264   |       |           |            |               |          |
-| Source |   RTMP   |   /    |  H.264   |       |           |            |               |          |
-| Source |   RTP    |   /    |  H.264   |       |           |            |               |          |
-|  Sink  |   RTSP   |   /    |  H.264   |       |           |            |               |          |
-|  Sink  |   RTMP   |   /    |  H.264   |       |           |            |               |          |
-|  Sink  |   RTP    |   /    |  H.264   |       |           |            |               |          |
-|  Sink  |    /     |  MP4   |  H.264   |       |           |            |               |          |
+| Source |   V4L2   | MJPEG  |   JPEG   |   ✅   |     ❓     |     ❓      |       ❓       |    ❓     |
+| Source |   V4L2   |  Raw   |    /     |   ✅   |     /     |     /      |       /       |    /     |
+| Source |   RTSP   |   /    |  H.264   |   ✅   |     ❓     |     ❓      |       ❓       |    ❓     |
+| Source |   RTMP   |   /    |  H.264   |   ❌   |     ❌     |     ❌      |       ❌       |    ❌     |
+| Source |   RTP    |   /    |  H.264   |   ✅   |     ❓     |     ❓      |       ❓       |    ❓     |
+|  Sink  |   RTSP   |   /    |  H.264   |   ✅   |     ❓     |     ❓      |       ❓       |    ❓     |
+|  Sink  |   RTMP   |   /    |  H.264   |   ❌   |     ❌     |     ❌      |       ❌       |    ❌     |
+|  Sink  |   RTP    |   /    |  H.264   |   ✅   |     ❓     |     ❓      |       ❓       |    ❓     |
+|  Sink  |    /     |  MP4   |  H.264   |   ❌   |     ❌     |     ❌      |       ❌       |    ❌     |
+
+- ✅: 支持且已测试
+- ❓: 支持但未测试
+- ❌: 暂时不支持
 
 关于各个数据输入与输出的延迟和吞吐量，请参阅 [benchmark.md](docs/zh_CN/benchmark.md) 。
 
