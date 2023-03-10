@@ -1,5 +1,7 @@
 #pragma once
 
+#include <zetton_stream/base/stream_uri.h>
+
 #include <cstring>
 #include <sstream>
 #include <string>
@@ -225,6 +227,30 @@ inline bool IsGstSupportedExtension(const char* ext, const char** supported) {
 
   return false;
 }
+
+bool BuildGstPipelineSource(
+    const StreamOptions& options, std::string& pipeline_source,
+    const StreamProtocolType& protocol = StreamProtocolType::PROTOCOL_DEFAULT);
+
+bool BuildGstPipelineCaps(
+    const StreamOptions& options, std::string& pipeline_caps,
+    const StreamProtocolType& protocol = StreamProtocolType::PROTOCOL_DEFAULT);
+
+bool BuildGstPipelineEncoding(
+    const StreamOptions& options, std::string& pipeline_encode,
+    const StreamProtocolType& protocol = StreamProtocolType::PROTOCOL_DEFAULT);
+
+bool BuildGstPipelineDecoding(
+    const StreamOptions& options, std::string& pipeline_decode,
+    const StreamProtocolType& protocol = StreamProtocolType::PROTOCOL_DEFAULT);
+
+bool BuildGstPipelineMuxing(
+    const StreamOptions& options, std::string& pipeline_mux,
+    const StreamProtocolType& protocol = StreamProtocolType::PROTOCOL_DEFAULT);
+
+bool BuildGstPipelineSink(
+    const StreamOptions& options, std::string& pipeline_sink,
+    const StreamProtocolType& protocol = StreamProtocolType::PROTOCOL_DEFAULT);
 
 }  // namespace stream
 }  // namespace zetton

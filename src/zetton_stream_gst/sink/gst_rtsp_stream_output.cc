@@ -1,9 +1,12 @@
 #include "zetton_stream_gst/sink/gst_rtsp_stream_output.h"
 
+#include <fmt/core.h>
+
 #include <memory>
 #include <string>
 
 #include "zetton_stream/base/stream_options.h"
+#include "zetton_stream_gst/util/gst_loop.h"
 #include "zetton_stream_gst/util/gst_pipeline.h"
 
 namespace zetton {
@@ -58,7 +61,7 @@ static void media_configure(GstRTSPMediaFactory *factory, GstRTSPMedia *media,
   if (appsrc) {
     GstElement *pipeline = gst_rtsp_media_get_element(media);
 
-    *appsrc = gst_bin_get_by_name(GST_BIN(pipeline), "imagesrc");
+    *appsrc = gst_bin_get_by_name(GST_BIN(pipeline), "src");
 
     /* this instructs appsrc that we will be dealing with timed buffer */
     gst_util_set_object_arg(G_OBJECT(*appsrc), "format", "time");
@@ -107,13 +110,15 @@ bool GstRtspStreamOutput::Init(const StreamOptions &options) {
 GstRtspStreamOutput::~GstRtspStreamOutput() { Close(); }
 
 bool GstRtspStreamOutput::Open() {
+  // initialize GStreamer
+  if (!gst_is_initialized()) {
+    gst_init(nullptr, nullptr);
+  }
+
   // get rtsp mountpoint
   if (!options_.resource.location.empty()) {
     mountpoint_ = options_.resource.mountpoint;
   }
-
-  // create and run main event loop
-  start_video_mainloop();
 
   // initialize rtsp server
   rtsp_server_ = create_rtsp_server();
@@ -135,7 +140,23 @@ bool GstRtspStreamOutput::Open() {
   return false;
 }
 
-void GstRtspStreamOutput::Close() {
+void GstRtspStreamOutput::Close() { Stop(); }
+
+bool GstRtspStreamOutput::Start() {
+#if 1
+  // Create the main loop
+  loop_ = g_main_loop_new(nullptr, false);
+
+  // Run the loop in a separate thread
+  g_main_loop_run(loop_);
+#else
+  start_gst_main_loop(loop_, loop_thread_);
+#endif
+
+  return true;
+}
+
+void GstRtspStreamOutput::Stop() {
   // but if pipeline not created appsrc will be deleted here
   for (std::pair<std::string, GstAppSrc *> element : appsrc_) {
     if (element.second != nullptr) {
@@ -184,65 +205,31 @@ bool GstRtspStreamOutput::Render(void *image, uint32_t width, uint32_t height) {
 void GstRtspStreamOutput::SetStatus(const char *str) {}
 
 bool GstRtspStreamOutput::BuildPipelineString() {
-  std::string head =
-      "( appsrc name=imagesrc do-timestamp=true min-latency=0 max-latency=0 "
-      "max-bytes=1000 is-live=true ! videoconvert ! videoscale";
-  std::string caps = " ! video/x-raw,framerate=" +
-                     std::to_string(static_cast<int>(options_.frame_rate)) +
-                     "/1,width=" + std::to_string(options_.width) +
-                     ",height=" + std::to_string(options_.height);
-  std::string encode;
-  if (options_.codec == StreamCodec::CODEC_H264) {
-    if (options_.platform == StreamPlatformType::PLATFORM_CPU) {
-      encode = " ! queue ! x264enc tune=zerolatency bitrate=" +
-               std::to_string(options_.bit_rate) +
-               " key-int-max=30 ! video/x-h264, profile=baseline";
-    } else if (options_.platform == StreamPlatformType::PLATFORM_ROCKCHIP) {
-      encode = " ! queue ! mpph264enc ! video/x-h264, profile=high";
-    } else if (options_.platform == StreamPlatformType::PLATFORM_JETSON) {
-      encode =
-          caps +
-          " ! nvvidconv ! video/x-raw(memory:NVMM),format=I420 ! omxh264enc "
-          "bitrate=" +
-          std::to_string(options_.bit_rate) +
-          " ! video/x-h264, stream-format=byte-stream";
-    } else {
-      std::cerr << "Unsupported platform: "
-                << StreamPlatformTypeToStr(options_.platform) << std::endl;
-      return false;
-    }
-    std::string tail = " ! h264parse ! queue ! rtph264pay name=pay0 pt=96 )";
-    pipeline_string_ = head + encode + tail;
-    return true;
-  } else {
-    std::cerr << "Unsupported encoding codec: "
-              << StreamCodecToStr(options_.codec) << std::endl;
+  // Build different parts of the pipeline
+  std::string source, caps, encoding, mux;
+  if (!BuildGstPipelineSource(options_, source,
+                              StreamProtocolType::PROTOCOL_APPSRC)) {
+    AERROR_F("Failed to build pipeline head");
+    return false;
+  }
+  if (!BuildGstPipelineCaps(options_, caps)) {
+    AERROR_F("Failed to build pipeline caps");
+    return false;
+  }
+  if (!BuildGstPipelineEncoding(options_, encoding)) {
+    AERROR_F("Failed to build pipeline encoding");
+    return false;
+  }
+  if (!BuildGstPipelineMuxing(options_, mux)) {
+    AERROR_F("Failed to build pipeline tail");
     return false;
   }
 
-  return false;
-}
+  // Combine the pipeline
+  pipeline_string_ = fmt::format("( {} ! videoconvert ! videoscale {} {} )",
+                                 source, encoding, mux);
 
-void GstRtspStreamOutput::start_video_mainloop() {
-  // create and run main event loop
-  loop_ = g_main_loop_new(nullptr, FALSE);
-  g_assert(loop_);
-  loop_thread_ = std::thread([&]() {
-    //    std::cout << "GMainLoop started." << std::endl;
-    // blocking
-    g_main_loop_run(loop_);
-    // terminated!
-    g_main_loop_unref(loop_);
-    loop_ = nullptr;
-    //    std::cout << "GMainLoop terminated." << std::endl;
-  });
-  // may cause a problem on non Linux, but i'm not care.
-  pthread_setname_np(loop_thread_.native_handle(), "g_main_loop_run");
-
-  if (!gst_is_initialized()) {
-    //    std::cout << "Initializing gstreamer" << std::endl;
-    gst_init(nullptr, nullptr);
-  }
+  return true;
 }
 
 GstRTSPServer *GstRtspStreamOutput::create_rtsp_server() {
