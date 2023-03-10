@@ -12,7 +12,7 @@ namespace stream {
 
 class CvGstStreamOutput : public BaseStreamSink {
  public:
-  ~CvGstStreamOutput() = default;
+  ~CvGstStreamOutput() override = default;
 
   static bool IsSupportedExtension(const char* ext);
   static const char* SupportedExtensions[];
