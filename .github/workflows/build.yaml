@@ -71,6 +71,5 @@ jobs:
       - name: Test
         run: |
           cd ..
-          ./build/zetton_stream_gst/sink_test_gst_stream_output
-          # colcon test --packages-select zetton_stream_gst --return-code-on-test-failure
-          # colcon test-result --verbose
+          colcon test --packages-select zetton_stream_gst --return-code-on-test-failure
+          colcon test-result --verbose
