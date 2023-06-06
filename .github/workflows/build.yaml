@@ -67,7 +67,7 @@ jobs:
       - name: Build
         run: |
           cd ..
-          colcon build --packages-up-to ubis_cpp --cmake-args -DCMAKE_BUILD_TYPE=Release
+          colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
       # - name: Test
       #   run: |
       #     colcon test --packages-select ubis_cpp --return-code-on-test-failure
