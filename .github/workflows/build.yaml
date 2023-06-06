@@ -68,7 +68,7 @@ jobs:
         run: |
           cd ..
           colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
-      # - name: Test
-      #   run: |
-      #     colcon test --packages-select ubis_cpp --return-code-on-test-failure
-      #     colcon test-result --verbose
+      - name: Test
+        run: |
+          colcon test --packages-select zetton_stream_gst --return-code-on-test-failure
+          colcon test-result --verbose
