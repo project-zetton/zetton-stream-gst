@@ -7,7 +7,7 @@ TEST_CASE("GstStreamOutput initialization", "[GstStreamOutput]") {
   zetton::stream::GstStreamOutput output;
 
   SECTION("Initialization succeeds") {
-    std::string url = "rtp://192.168.89.163:5000/";
+    std::string url = "rtp://localhost:5000/";
     options.resource = url;
     options.platform = zetton::stream::StreamPlatformType::PLATFORM_CPU;
     options.codec = zetton::stream::StreamCodec::CODEC_H264;
