@@ -91,14 +91,15 @@ bool BuildGstPipelineDecoding(const StreamOptions& options,
 bool BuildGstPipelineMuxing(const StreamOptions& options,
                             std::string& pipeline_mux,
                             const StreamProtocolType& protocol) {
-  // Get the protocol type
+  // 1. Get the protocol type
   StreamProtocolType input_protocol = options.resource.protocol;
   if (protocol != StreamProtocolType::PROTOCOL_DEFAULT) {
     input_protocol = protocol;
   }
 
-  // Build the pipeline muxing part according to the protocol type and codec
+  // 2. Build the pipeline muxing part according to the protocol type and codec
   // type
+  // 2.1. Build for RTSP/RTP
   if (input_protocol == StreamProtocolType::PROTOCOL_RTP ||
       input_protocol == StreamProtocolType::PROTOCOL_RTSP) {
     if (options.codec == StreamCodec::CODEC_H264) {
@@ -108,7 +109,19 @@ bool BuildGstPipelineMuxing(const StreamOptions& options,
                StreamCodecToStr(options.codec));
       return false;
     }
-  } else {
+  }
+  // 2.2. Build for file
+  else if (input_protocol == StreamProtocolType::PROTOCOL_FILE) {
+    if (options.codec == StreamCodec::CODEC_H264) {
+      pipeline_mux = " ! h264parse ! queue ! mp4mux name=mux";
+    } else {
+      AERROR_F("Unsupported codec for pipeline muxing part: {}",
+               StreamCodecToStr(options.codec));
+      return false;
+    }
+  }
+  // 2.X. Build for other protocols
+  else {
     AERROR_F("Unsupported protocol for pipeline muxing part: {}",
              StreamProtocolTypeToStr(input_protocol));
     return false;
@@ -120,13 +133,14 @@ bool BuildGstPipelineMuxing(const StreamOptions& options,
 bool BuildGstPipelineSink(const StreamOptions& options,
                           std::string& pipeline_sink,
                           const StreamProtocolType& protocol) {
-  // Get the protocol type
+  // 1. Get the protocol type
   StreamProtocolType input_protocol = options.resource.protocol;
   if (protocol != StreamProtocolType::PROTOCOL_DEFAULT) {
     input_protocol = protocol;
   }
 
-  // Build the pipeline head part according to the protocol type
+  // 2. Build the pipeline head part according to the protocol type
+  // 2.1. Build for RTSP/RTP
   if (input_protocol == StreamProtocolType::PROTOCOL_RTP) {
     pipeline_sink =
         fmt::format(" ! udpsink host={} port={}", options.resource.location,
@@ -134,7 +148,14 @@ bool BuildGstPipelineSink(const StreamOptions& options,
     if (options.async) {
       pipeline_sink += " sync=false";
     }
-  } else {
+  }
+  // 2.2. Build for file
+  else if (input_protocol == StreamProtocolType::PROTOCOL_FILE) {
+    pipeline_sink =
+        fmt::format(" ! filesink location={}", options.resource.location);
+  }
+  // 2.X. Build for other protocols
+  else {
     AERROR_F("Unsupported protocol for pipeline head part: {}",
              StreamProtocolTypeToStr(input_protocol));
     return false;
