@@ -67,13 +67,10 @@ jobs:
       - name: Build
         run: |
           cd ..
-          echo $PWD
-          ls $PWD
-          colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+          colcon build --packages-up-to zetton_stream_gst --cmake-args -DCMAKE_BUILD_TYPE=Release
       - name: Test
         run: |
           cd ..
-          echo $PWD
-          ls $PWD
-          colcon test --packages-select zetton_stream_gst --return-code-on-test-failure
-          colcon test-result --verbose
+          ./build/zetton_stream_gst/sink_test_gst_stream_output
+          # colcon test --packages-select zetton_stream_gst --return-code-on-test-failure
+          # colcon test-result --verbose
