@@ -1,25 +1,28 @@
 #include <opencv2/opencv.hpp>
+#include <thread>
 
 #include "zetton_stream_gst/sink/gst_snoop_output.h"
 
 int main(int argc, char *argv[]) {
-  // init gstreamer
+  // 0. prepare
+  // 0.1. init gstreamer
   gst_init(&argc, &argv);
 
-  // init snoop pipe
+  // 0.2. init snoop pipe
   std::string pipeline_src =
       "videotestsrc num-buffers=600 ! "
       "video/x-raw,width=(int)640,height=(int)480,"
       "format=(string)RGB,framerate=(fraction)30/1 ! queue ! appsink "
       "name=testsink";
+  // use fakesink instead of fpsdisplaysink to run on headless server
   std::string pipeline_sink =
       "appsrc name=testsource caps=video/x-raw,width=(int)640,height=(int)480,"
       "format=(string)RGB,framerate=(fraction)30/1 ! queue ! videoconvert ! "
-      "fpsdisplaysink";
+      "fakesink";
   GstSnoopOutput pipe(pipeline_src, pipeline_sink);
   pipe.Init();
 
-  // register callback
+  // 1. register callback
   // pipe.RegisterCallback([](GstMapInfo *map) {
   //   g_print("%lu\n", map->size);
   // });
@@ -39,8 +42,17 @@ int main(int argc, char *argv[]) {
               true);  // true: use L2 norm
   });
 
-  // start pipeline
+  // 2. run pipeline
+  // 2.1. start pipeline
+  std::cout << ">>> start pipeline" << std::endl;
   pipe.Start();
+
+  // 2.2. sleep 10 seconds
+  std::cout << ">>> sleep" << std::endl;
+  std::this_thread::sleep_for(std::chrono::seconds(10));
+
+  // 2.3. stop pipeline
+  std::cout << ">>> stop pipeline" << std::endl;
   pipe.Stop();
 
   return 0;

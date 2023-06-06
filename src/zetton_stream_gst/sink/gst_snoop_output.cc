@@ -30,7 +30,7 @@ bool GstSnoopOutput::Init() {
     return false;
   }
 
-  g_print("Capture bin launched\n");
+  // g_print("Capture bin launched\n");
 
   // to be notified of messages from this pipeline, mostly EOS
   GstBus *bus = NULL;
@@ -62,7 +62,7 @@ bool GstSnoopOutput::Init() {
     g_main_loop_unref(loop_);
     return false;
   }
-  g_print("Play bin launched\n");
+  // g_print("Play bin launched\n");
 
   // Obtains the testsource element by name from the bin
   GstElement *testsource = NULL;
@@ -79,7 +79,7 @@ bool GstSnoopOutput::Init() {
   gst_bus_add_watch(bus, (GstBusFunc)OnSinkMessage, this);
   gst_object_unref(bus);
 
-  g_print("Going to set state to play\n");
+  // g_print("Going to set state to play\n");
 
   // Returns true upon successful initialization
   return true;
@@ -93,9 +93,9 @@ void GstSnoopOutput::Start() {
 
   // let's run, this loop will quit when the sink pipeline goes EOS or when an
   // error occurs in the source or sink pipelines.
-  g_print("Let's run!\n");
+  // g_print("Let's run!\n");
   g_main_loop_run(loop_);
-  g_print("Going out\n");
+  // g_print("Going out\n");
 }
 
 void GstSnoopOutput::Stop() {
@@ -130,7 +130,7 @@ GstFlowReturn GstSnoopOutput::ModifyInData(GstMapInfo *map) {
 
   dataLength = map->size;
   rdata = map->data;
-  g_print("%s dataLen = %lu\n", __func__, dataLength);
+  // g_print("%s dataLen = %lu\n", __func__, dataLength);
 
   // Modify half of frame to plane white
   // for (gsize i = 0; i <= dataLength / 2; i++) {
@@ -150,7 +150,7 @@ GstFlowReturn GstSnoopOutput::OnNewSampleFromSink(GstElement *elt,
   //   guint8 *rdata;
   //   int dataLength;
   //   int i;
-  g_print("%s\n", __func__);
+  // g_print("%s\n", __func__);
 
   // get the sample from appsink
   sample = gst_app_sink_pull_sample(GST_APP_SINK(elt));
@@ -184,8 +184,8 @@ GstFlowReturn GstSnoopOutput::OnNewSampleFromSink(GstElement *elt,
 gboolean GstSnoopOutput::OnSourceMessage(GstBus *bus, GstMessage *message,
                                          GstSnoopOutput *user_data) {
   GstElement *source;
-  g_print("%s\n", __func__);
-  g_print("%s\n", GST_MESSAGE_TYPE_NAME(message));
+  // g_print("%s\n", __func__);
+  // g_print("%s\n", GST_MESSAGE_TYPE_NAME(message));
 
   // Process messages from the source pipeline
   switch (GST_MESSAGE_TYPE(message)) {
@@ -211,7 +211,7 @@ gboolean GstSnoopOutput::OnSourceMessage(GstBus *bus, GstMessage *message,
 gboolean GstSnoopOutput::OnSinkMessage(GstBus *bus, GstMessage *message,
                                        GstSnoopOutput *user_data) {
   // Process messages from the sink pipeline
-  g_print("%s\n", __func__);
+  // g_print("%s\n", __func__);
   switch (GST_MESSAGE_TYPE(message)) {
     case GST_MESSAGE_EOS:
       // EOS from the sink pipeline, quit the loop
