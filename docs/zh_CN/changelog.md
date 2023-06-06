@@ -19,6 +19,10 @@ title: 更新日志
 
 - 构建：启用对`examples`文件夹内的示例程序的编译 #1
 
+**Tests**
+
+- CI：支持 GitHub Actions 自动化测试 #2
+
 **Documentation**
 
 - 文档：更新`README.md`，补充对于各类场景的支持矩阵 #1
