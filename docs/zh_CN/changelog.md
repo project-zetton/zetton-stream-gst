@@ -9,6 +9,7 @@ title: 更新日志
 **Features**
 
 - 功能：新增`GstStreamOutput`类，支持通过 GStreamer 进行 RTP 推流 #1
+- 功能：新增`GstSnoopOutput`类，支持通过 GStreamer 负责输入与输出，并在中间部分使用回调函数对视频流数据进行处理 #2
 
 **Fixes**
 
